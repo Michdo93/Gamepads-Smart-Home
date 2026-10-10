@@ -1,0 +1,14 @@
+# Installation im venv (Kapitel 5):
+#   python3 -m venv .venv
+#   source .venv/bin/activate
+#   pip install -r requirements.txt
+#   pip install -e .
+
+pyyaml>=6.0
+evdev>=1.6            # nur Linux – Kapitel 6
+pygame>=2.5           # SDL 2 – Kapitel 7 und 8
+inputs>=0.5           # nur für den Bibliotheksvergleich in Kapitel 4
+paho-mqtt>=2.0        # Ansatz A – Teil IV
+aiohttp>=3.9
+flask>=3             # Mini-openHAB (Kapitel 22)
+python-openhab-rest-client @ git+https://github.com/Michdo93/python-openhab-rest-client.git

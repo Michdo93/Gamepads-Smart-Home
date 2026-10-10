@@ -1,0 +1,20 @@
+// ============================================================================
+// Kapitel 14 – Regeln auf Tasten des Linux Input Bindings
+// Jeder Tasten-Kanal löst beim Drücken PRESSED und beim Loslassen RELEASED aus.
+// ============================================================================
+
+rule "Linux Input: A schaltet das Licht"
+when
+    Channel "linuxinput:input-device:gamepad:keypresses#BTN_SOUTH" triggered PRESSED
+then
+    iSmartHome_Hue_Lampen_Schalter.sendCommand(
+        if (iSmartHome_Hue_Lampen_Schalter.state == ON) OFF else ON)
+end
+
+rule "Linux Input: B dimmt herunter, solange gedrückt"
+when
+    Item Linuxinput_Taste_B changed to CLOSED
+then
+    // Ohne Achsen und ohne Zeitmessung bleibt nur: ein Schritt je Druck
+    iSmartHome_Hue_Lampen_Helligkeit.sendCommand(DECREASE)
+end

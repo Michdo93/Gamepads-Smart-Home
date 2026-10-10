@@ -1,0 +1,53 @@
+# ----------------------------------------------------------------------------
+# Vorlage für die lokale Konfiguration.
+#
+#   cp config/config.example.yaml config/config.yaml
+#
+# config/config.yaml steht in .gitignore und wird NIE eingecheckt.
+# ----------------------------------------------------------------------------
+
+# --- openHAB (Ansatz B: REST, Teil V) ----------------------------------------
+openhab:
+  url: "http://openhab.local:8080"
+  token: "oh.gamepad.XXXXXXXXXXXXXXXXXXXXXXXX"   # API-Token (UI -> Profil -> API-Tokens)
+  min_interval: 0.1        # Sekunden zwischen zwei analogen Werten an dasselbe Item
+
+# --- MQTT (Ansatz A, Teil IV) ------------------------------------------------
+mqtt:
+  host: "localhost"        # Mosquitto (Kapitel 17)
+  port: 1883
+  username: "gamepad"
+  password: "CHANGE_ME"
+  base_topic: "gamepad"
+  client_id: "gamepad-gateway"
+  tls: false
+  rate_hz: 10              # höchstens 10 Achswerte je Sekunde und Topic
+  step: 5                  # Achsen auf 5-%-Schritte runden
+
+# --- Gamepads: Alias -> Gerät (Kapitel 12) -----------------------------------
+# Geräte anzeigen:  python3 12-mehrere-controller/controller_liste.py
+# Jedes Feld ist ein Teilstring; alle angegebenen Felder müssen passen.
+# Beim Xbox-360-Funkempfänger unterscheidet phys (input0/2/4/6) die Funkplätze.
+gamepads:
+  - {alias: wohnzimmer, name: "Xbox 360 Wireless Receiver", phys: "input0"}
+  # - {alias: labor,      name: "Xbox 360 Wireless Receiver", phys: "input2"}
+  # - {alias: ps4,        usb: "054c:"}
+
+# Eigene Mapping-Dateien (Kapitel 8) – haben Vorrang vor den mitgelieferten
+mapping_dirs: ["config/mappings"]
+
+# --- Bedienlogik (Kapitel 10) ------------------------------------------------
+logic:
+  long_press: 0.6          # Sekunden bis "long"
+  double_press: 0.3        # max. Abstand für "double"
+  repeat_delay: 0.4        # Halten: erste Wiederholung nach ...
+  repeat_interval: 0.15    # ... dann alle ...
+  repeat: [up, down, left, right]
+  modifiers: []            # z. B. [lb] – dann heißt lb + a "lb+a"
+  trigger_on: 0.6          # Trigger gilt als gedrückt ab ...
+  trigger_off: 0.4         # ... und als losgelassen unter ... (Hysterese)
+  stick_on: 0.6            # Stick-Richtung ab ...
+  stick_off: 0.4           # ... und zurück zur Mitte unter ...
+
+# --- Bedienprofil für Ansatz B (Kapitel 23, 26) --------------------------------
+profile: "26-labor-szenarien/profile/labor.yaml"

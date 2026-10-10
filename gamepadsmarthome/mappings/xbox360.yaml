@@ -1,0 +1,33 @@
+# Xbox-360-Controller mit Kabel – Kerneltreiber xpad
+# Werte nach dem xpad-Quelltext und der Linux-Joystick-Schnittstelle von SDL 2.
+# Mit dem eigenen Controller prüfen: python3 08-mapping/mapping_finder.py
+name: "Xbox 360 Controller (Kabel)"
+match:
+  names: ["Microsoft X-Box 360 pad", "Xbox 360 Controller"]
+  usb: ["045e:028e"]
+notes: >
+  xpad meldet die X-Taste als BTN_X (= BTN_NORTH, 307) und Y als BTN_Y (= BTN_WEST, 308) –
+  also genau umgekehrt zur Lage der Tasten. Die Sticks liefern -32768..32767, die
+  Trigger 0..255. Das Steuerkreuz kommt als Hat (ABS_HAT0X/ABS_HAT0Y).
+evdev:
+  buttons: {a: BTN_SOUTH, b: BTN_EAST, x: BTN_NORTH, y: BTN_WEST, lb: BTN_TL, rb: BTN_TR,
+            back: BTN_SELECT, start: BTN_START, guide: BTN_MODE, ls: BTN_THUMBL, rs: BTN_THUMBR}
+  axes:
+    lx: {code: ABS_X}
+    ly: {code: ABS_Y, invert: true}
+    rx: {code: ABS_RX}
+    ry: {code: ABS_RY, invert: true}
+    lt: {code: ABS_Z, trigger: true}
+    rt: {code: ABS_RZ, trigger: true}
+  dpad: {hat: [ABS_HAT0X, ABS_HAT0Y]}
+pygame:
+  # SDL 2 nummeriert Tasten und Achsen in der Reihenfolge der evdev-Codes
+  buttons: {a: 0, b: 1, x: 2, y: 3, lb: 4, rb: 5, back: 6, start: 7, guide: 8, ls: 9, rs: 10}
+  axes:
+    lx: {index: 0}
+    ly: {index: 1, invert: true}
+    lt: {index: 2, trigger: true}
+    rx: {index: 3}
+    ry: {index: 4, invert: true}
+    rt: {index: 5, trigger: true}
+  dpad: {hat: 0}

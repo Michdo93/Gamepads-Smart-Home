@@ -1,0 +1,35 @@
+# PlayStation DualShock 4 – per Kabel oder über den Sony-USB-Funkadapter
+# Kerneltreiber hid-playstation (ab Linux 6.2, vorher hid-sony).
+# Prüfen: python3 08-mapping/mapping_finder.py
+name: "DualShock 4"
+match:
+  names: ["Wireless Controller", "DUALSHOCK", "Sony Interactive Entertainment"]
+  usb: ["054c:05c4", "054c:09cc", "054c:0ba0"]
+notes: >
+  Kreuz = a, Kreis = b, Quadrat = x, Dreieck = y (Lage wie beim Xbox-Pad).
+  hid-playstation hält sich an die Himmelsrichtungen: Quadrat = BTN_WEST, Dreieck = BTN_NORTH.
+  Sticks und Trigger liefern 0..255. L2/R2 gibt es zusätzlich als digitale Tasten
+  (BTN_TL2/BTN_TR2). Touchpad und Bewegungssensor erscheinen als eigene Eingabegeräte.
+  Der Funkadapter 054c:0ba0 meldet sich als USB-Gerät und lässt sich per USB/IP weiterreichen.
+evdev:
+  buttons: {a: BTN_SOUTH, b: BTN_EAST, x: BTN_WEST, y: BTN_NORTH, lb: BTN_TL, rb: BTN_TR,
+            back: BTN_SELECT, start: BTN_START, guide: BTN_MODE, ls: BTN_THUMBL, rs: BTN_THUMBR}
+  axes:
+    lx: {code: ABS_X}
+    ly: {code: ABS_Y, invert: true}
+    rx: {code: ABS_RX}
+    ry: {code: ABS_RY, invert: true}
+    lt: {code: ABS_Z, trigger: true}
+    rt: {code: ABS_RZ, trigger: true}
+  dpad: {hat: [ABS_HAT0X, ABS_HAT0Y]}
+pygame:
+  # Reihenfolge der evdev-Codes: SOUTH, EAST, NORTH, WEST, TL, TR, TL2, TR2, SELECT, START, MODE, THUMBL, THUMBR
+  buttons: {a: 0, b: 1, y: 2, x: 3, lb: 4, rb: 5, back: 8, start: 9, guide: 10, ls: 11, rs: 12}
+  axes:
+    lx: {index: 0}
+    ly: {index: 1, invert: true}
+    lt: {index: 2, trigger: true}
+    rx: {index: 3}
+    ry: {index: 4, invert: true}
+    rt: {index: 5, trigger: true}
+  dpad: {hat: 0}

@@ -1,0 +1,13 @@
+# Lokale Konfiguration mit Token, Passwörtern und Secrets – NIE einchecken
+config/config.yaml
+config/mappings/
+*.pem
+*.key
+mosquitto/passwd
+
+# Erzeugte Dateien
+output/
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/

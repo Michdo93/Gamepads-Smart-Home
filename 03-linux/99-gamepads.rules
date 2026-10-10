@@ -1,0 +1,23 @@
+# ============================================================================
+# Kapitel 3 – udev-Regeln für Gamepads
+# Datei: /etc/udev/rules.d/99-gamepads.rules
+#   sudo cp 03-linux/99-gamepads.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload && sudo udevadm trigger
+#
+# Voraussetzung: Der Benutzer ist in der Gruppe "input":  sudo usermod -aG input $USER
+# (/dev/input/event* gehört unter Raspberry Pi OS und Ubuntu bereits dieser Gruppe.)
+# ============================================================================
+
+# Ring-LED des Xbox-360-Controllers (Treiber xpad) für die Gruppe input schreibbar machen
+SUBSYSTEM=="leds", KERNEL=="xpad*", RUN+="/bin/sh -c 'chgrp input /sys%p/brightness && chmod g+w /sys%p/brightness'"
+
+# Lightbar und Spieler-LEDs von DualShock 4 / DualSense (Treiber hid-playstation)
+SUBSYSTEM=="leds", DRIVERS=="playstation", RUN+="/bin/sh -c 'chgrp input /sys%p/brightness /sys%p/multi_intensity 2>/dev/null; chmod g+w /sys%p/brightness /sys%p/multi_intensity 2>/dev/null; true'"
+
+# hidraw-Zugriff für SDL/pygame (HIDAPI-Treiber, Kapitel 7) – nur Sony-Controller
+KERNEL=="hidraw*", ATTRS{idVendor}=="054c", MODE="0660", GROUP="input"
+
+# Feste Namen zusätzlich zu /dev/input/by-id: /dev/input/gamepad-<Funkplatz>
+# (Xbox-360-Funkempfänger: phys endet auf input0, input2, input4, input6)
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="Xbox 360 Wireless Receiver*", ATTRS{phys}=="*input0", SYMLINK+="input/gamepad-1"
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="Xbox 360 Wireless Receiver*", ATTRS{phys}=="*input2", SYMLINK+="input/gamepad-2"

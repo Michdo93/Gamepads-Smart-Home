@@ -1,0 +1,30 @@
+# PlayStation 5 DualSense – Kerneltreiber hid-playstation (ab Linux 5.12)
+# Belegung wie beim DualShock 4. Nicht im Labor gemessen – mit dem Mapping-Finder prüfen.
+name: "DualSense"
+match:
+  names: ["DualSense"]
+  usb: ["054c:0ce6", "054c:0df2"]
+notes: >
+  Create = back, Options = start. Wie beim DualShock 4 erscheinen Touchpad und
+  Bewegungssensor als eigene Eingabegeräte.
+evdev:
+  buttons: {a: BTN_SOUTH, b: BTN_EAST, x: BTN_WEST, y: BTN_NORTH, lb: BTN_TL, rb: BTN_TR,
+            back: BTN_SELECT, start: BTN_START, guide: BTN_MODE, ls: BTN_THUMBL, rs: BTN_THUMBR}
+  axes:
+    lx: {code: ABS_X}
+    ly: {code: ABS_Y, invert: true}
+    rx: {code: ABS_RX}
+    ry: {code: ABS_RY, invert: true}
+    lt: {code: ABS_Z, trigger: true}
+    rt: {code: ABS_RZ, trigger: true}
+  dpad: {hat: [ABS_HAT0X, ABS_HAT0Y]}
+pygame:
+  buttons: {a: 0, b: 1, y: 2, x: 3, lb: 4, rb: 5, back: 8, start: 9, guide: 10, ls: 11, rs: 12}
+  axes:
+    lx: {index: 0}
+    ly: {index: 1, invert: true}
+    lt: {index: 2, trigger: true}
+    rx: {index: 3}
+    ry: {index: 4, invert: true}
+    rt: {index: 5, trigger: true}
+  dpad: {hat: 0}

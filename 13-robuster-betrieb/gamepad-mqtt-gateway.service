@@ -1,0 +1,35 @@
+# ============================================================================
+# Kapitel 13 – Gamepad-MQTT-Gateway (Kapitel 18) als systemd-Dienst
+# Datei: /etc/systemd/system/gamepad-mqtt-gateway.service
+#   sudo cp 13-robuster-betrieb/gamepad-mqtt-gateway.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now gamepad-mqtt-gateway
+#   journalctl -u gamepad-mqtt-gateway -f
+# Annahme: Repo unter /opt/Gamepads-Smart-Home, venv in .venv, Benutzer "gamepad".
+# ============================================================================
+[Unit]
+Description=Gamepad-MQTT-Gateway (Kapitel 18)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=gamepad
+Group=gamepad
+# input: Controller lesen; gamepad: config.yaml lesen (root:gamepad, 640)
+SupplementaryGroups=input
+WorkingDirectory=/opt/Gamepads-Smart-Home
+Environment=GAMEPAD_CONFIG=/opt/Gamepads-Smart-Home/config/config.yaml
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/Gamepads-Smart-Home/.venv/bin/python3 18-mqtt-gateway/gamepad_mqtt_gateway.py
+Restart=always
+RestartSec=5
+
+# Härtung: Das Programm braucht nur /dev/input, sysfs (LEDs) und das Netzwerk
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+DeviceAllow=char-input rw
+
+[Install]
+WantedBy=multi-user.target

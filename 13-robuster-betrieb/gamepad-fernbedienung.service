@@ -1,0 +1,35 @@
+# ============================================================================
+# Kapitel 13 – Gamepad-Fernbedienung über REST (Kapitel 23) als systemd-Dienst
+# Datei: /etc/systemd/system/gamepad-fernbedienung.service
+#   sudo cp 13-robuster-betrieb/gamepad-fernbedienung.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now gamepad-fernbedienung
+#   journalctl -u gamepad-fernbedienung -f
+# Annahme: Repo unter /opt/Gamepads-Smart-Home, venv in .venv, Benutzer "gamepad".
+# ============================================================================
+[Unit]
+Description=Gamepad-Fernbedienung über REST (Kapitel 23)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=gamepad
+Group=gamepad
+# input: Controller lesen; gamepad: config.yaml lesen (root:gamepad, 640)
+SupplementaryGroups=input
+WorkingDirectory=/opt/Gamepads-Smart-Home
+Environment=GAMEPAD_CONFIG=/opt/Gamepads-Smart-Home/config/config.yaml
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/Gamepads-Smart-Home/.venv/bin/python3 23-rest-fernbedienung/fernbedienung.py
+Restart=always
+RestartSec=5
+
+# Härtung: Das Programm braucht nur /dev/input, sysfs (LEDs) und das Netzwerk
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+DeviceAllow=char-input rw
+
+[Install]
+WantedBy=multi-user.target

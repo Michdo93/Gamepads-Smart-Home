@@ -1,0 +1,5 @@
+// Kapitel 14 – Je Taste ein Contact: CLOSED = gedrückt, OPEN = losgelassen
+// Die Kanal-ID hinter "keypresses#" ist der Name, den libevdev für den Code liefert.
+Contact Linuxinput_Taste_A     "Taste A [%s]"     { channel="linuxinput:input-device:gamepad:keypresses#BTN_SOUTH" }
+Contact Linuxinput_Taste_B     "Taste B [%s]"     { channel="linuxinput:input-device:gamepad:keypresses#BTN_EAST" }
+Contact Linuxinput_Taste_Start "Taste Start [%s]" { channel="linuxinput:input-device:gamepad:keypresses#BTN_START" }

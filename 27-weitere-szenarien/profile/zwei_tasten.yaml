@@ -1,0 +1,18 @@
+# Kapitel 27 – Zwei-Tasten-Bedienung (Barrierefreiheit)
+# B wählt das nächste Gerät (kurze Vibration als Bestätigung), A schaltet es.
+# Passt zu großen Einzeltastern, etwa am Xbox Adaptive Controller, die als A und B melden.
+name: "Zwei Tasten"
+rings:
+  geraet: [licht, radio, tv, morgen]
+lookups:
+  schalter:
+    ring: geraet
+    map:
+      licht:  iMultimedia_Hue_Lampen_Schalter
+      radio:  iMultimedia_Webradio_SWR3
+      tv:     iMultimedia_Samsung_TV_Power
+      morgen: iApplikation_Morgenroutine_Start
+actions:
+  "b:short": [{ring: geraet, step: 1}, {feedback: rumble, value: kurz}]
+  "b:long":  [{ring: geraet, step: -1}, {feedback: rumble, value: doppelt}]
+  "a:short": [{toggle: "{schalter}"}, {feedback: rumble, value: kurz}]

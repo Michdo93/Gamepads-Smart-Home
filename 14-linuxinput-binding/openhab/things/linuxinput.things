@@ -1,0 +1,18 @@
+// ============================================================================
+// Kapitel 14 – Versuch: Gamepad über das Linux Input Binding (linuxinput)
+//
+// Das Binding ist für Tastaturen gedacht; die automatische Suche findet nur sie.
+// Ein Gamepad lässt sich aber von Hand als Thing anlegen. Erwartung:
+//   + Tasten (EV_KEY) erscheinen als Kanäle, z. B. keypresses#BTN_SOUTH
+//   - Achsen (EV_ABS: Sticks, Trigger, Steuerkreuz als Hat) gibt es NICHT
+//   - enable=true belegt das Gerät EXKLUSIV – kein anderes Programm sieht es mehr
+// Voraussetzungen: Paket libevdev2 auf dem openHAB-Rechner, Benutzer "openhab"
+// in der Gruppe "input", der Controller hängt direkt (oder per USB/IP) an diesem Rechner.
+// Den genauen Pfad liefert:  ls -l /dev/input/by-id/
+// Die Kanal-IDs je Taste zeigt die Main UI unter Things -> Gamepad -> Channels.
+// ============================================================================
+
+Thing linuxinput:input-device:gamepad "Gamepad (Linux Input)" [
+    path="/dev/input/by-id/usb-Microsoft_Xbox_360_Wireless_Receiver-event-joystick",
+    enable=true
+]

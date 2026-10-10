@@ -1,0 +1,10 @@
+# Kapitel 17 – Zugriffsrechte (Datei: /etc/mosquitto/acl)
+# Das Gateway veröffentlicht unter gamepad/ und liest nur den Rückkanal.
+user gamepad
+topic write gamepad/#
+topic read gamepad/+/set/#
+
+# openHAB liest alles unter gamepad/ und schreibt den Rückkanal (Rumble, LED).
+user openhab
+topic read gamepad/#
+topic write gamepad/+/set/#

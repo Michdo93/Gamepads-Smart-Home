@@ -1,0 +1,41 @@
+// ============================================================================
+// Kapitel 21 – Rückkanal: openHAB meldet sich am Controller (Rules DSL)
+// Datei: $OPENHAB_CONF/rules/gamepad_rueckkanal.rules
+//   Klingel      -> Vibrationsmuster "klingel"
+//   Alarm        -> lange Vibration, LEDs blinken
+//   Raumauswahl  -> Ring-LED zeigt den Raum (Xbox 360: Spieler 1-4, Multimedia: kreisend)
+// Für DualShock 4/DualSense statt der Muster Farben senden, z. B. "0,80,255".
+// ============================================================================
+import java.util.Map
+
+val Map<String, String> LED_RAUM = newHashMap(
+    "iKonferenz" -> "player_1", "iKueche" -> "player_2", "iBad" -> "player_3",
+    "iIoT" -> "player_4", "iMultimedia" -> "rotate")
+
+rule "Rückkanal: Klingel"
+when
+    Item iSmartHome_Klingel changed to ON
+then
+    Gamepad_Wohnzimmer_Rumble.sendCommand("klingel")
+end
+
+rule "Rückkanal: Alarm"
+when
+    Item iSmartHome_Alarm changed
+then
+    if (newState == ON) {
+        Gamepad_Wohnzimmer_Rumble.sendCommand("lang")
+        Gamepad_Wohnzimmer_LED.sendCommand("blink_all_slow")
+    } else {
+        Gamepad_Wohnzimmer_LED.sendCommand(LED_RAUM.getOrDefault(Gamepad_Raum.state.toString, "player_1"))
+    }
+end
+
+rule "Rückkanal: Raum anzeigen"
+when
+    Item Gamepad_Raum changed or
+    Item Gamepad_Wohnzimmer_Online changed to "online"
+then
+    Gamepad_Wohnzimmer_LED.sendCommand(LED_RAUM.getOrDefault(Gamepad_Raum.state.toString, "player_1"))
+    Gamepad_Wohnzimmer_Rumble.sendCommand("kurz")
+end

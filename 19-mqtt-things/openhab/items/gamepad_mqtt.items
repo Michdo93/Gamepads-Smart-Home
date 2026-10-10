@@ -1,0 +1,20 @@
+// ============================================================================
+// Kapitel 19 – Items für das Gamepad im Wohnzimmer (Kanäle aus gamepad.things)
+// Für den Trigger-Kanal "event" gibt es KEIN Item – Regeln hängen direkt am Kanal.
+// "Letztes Ereignis" zeigt dieselbe Nachricht als Zustand (zur Anzeige in der Sitemap).
+// ============================================================================
+
+Group gGamepad "Gamepad Wohnzimmer" <gamepad>
+
+String Gamepad_Wohnzimmer_Online     "Gamepad [MAP(gamepad.map):%s]" <network> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:status" }
+String Gamepad_Wohnzimmer_Ereignis   "Letztes Ereignis [%s]" <gamepad> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:letztes" }
+Switch Gamepad_Wohnzimmer_Taste_A    "Taste A gedrückt [%s]" <gamepad> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:btn_a" }
+Switch Gamepad_Wohnzimmer_Taste_LB   "Taste LB gedrückt [%s]" <gamepad> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:btn_lb" }
+String Gamepad_Wohnzimmer_Steuerkreuz "Steuerkreuz [%s]" <gamepad> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:dpad" }
+Number Gamepad_Wohnzimmer_LX         "Linker Stick X [%d]" <gamepad> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:lx" }
+Number Gamepad_Wohnzimmer_LY         "Linker Stick Y [%d]" <gamepad> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:ly" }
+Dimmer Gamepad_Wohnzimmer_RT         "Trigger RT [%d %%]" <gamepad> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:rt" }
+Number Gamepad_Wohnzimmer_Farbton    "Farbton [%d °]" <colorwheel> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:hue" }
+Number:Dimensionless Gamepad_Wohnzimmer_Akku "Akku [%d %%]" <battery> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:battery" }
+String Gamepad_Wohnzimmer_Rumble     "Vibration" <gamepad> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:rumble", autoupdate="false" }
+String Gamepad_Wohnzimmer_LED        "LED" <light> (gGamepad) { channel="mqtt:topic:mosquitto:gamepad_wohnzimmer:led", autoupdate="false" }

@@ -1,0 +1,10 @@
+// ============================================================================
+// Kapitel 20 – Auswahl-Items: Welcher Raum, welcher Sender?
+// Die Regeln merken sich die Auswahl NICHT in Variablen, sondern in Items:
+//   + übersteht ein Neuladen der Regeln und einen Neustart (mit Persistenz)
+//   + ist in der Sitemap sichtbar und dort auch von Hand wählbar
+//   + alle drei Regelsprachen lesen denselben Zustand
+// ============================================================================
+
+String Gamepad_Raum   "Raum [MAP(gamepad_raum.map):%s]"   <house> (gGamepad)
+String Gamepad_Sender "Sender [%s]"                       <radio> (gGamepad)

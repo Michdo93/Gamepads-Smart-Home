@@ -1,0 +1,30 @@
+# Kapitel 8 – Beispielaufnahme: Licht, Raum, Radio, Lautstärke, Sender, Farbe, Rollladen, Routine
+{"dt": 0.0, "kind": "button", "control": "x", "value": 1}
+{"dt": 0.12, "kind": "button", "control": "x", "value": 0}
+{"dt": 0.6, "kind": "dpad", "control": "dpad", "value": [1, 0]}
+{"dt": 0.15, "kind": "dpad", "control": "dpad", "value": [0, 0]}
+{"dt": 0.5, "kind": "button", "control": "rb", "value": 1}
+{"dt": 0.1, "kind": "button", "control": "rb", "value": 0}
+{"dt": 0.5, "kind": "button", "control": "a", "value": 1}
+{"dt": 0.1, "kind": "button", "control": "a", "value": 0}
+{"dt": 0.5, "kind": "dpad", "control": "dpad", "value": [0, 1]}
+{"dt": 0.9, "kind": "dpad", "control": "dpad", "value": [0, 0]}
+{"dt": 0.5, "kind": "axis", "control": "rt", "value": 0.3}
+{"dt": 0.05, "kind": "axis", "control": "rt", "value": 0.8}
+{"dt": 0.2, "kind": "axis", "control": "rt", "value": 0.1}
+{"dt": 0.08, "kind": "axis", "control": "rx", "value": 0.0}
+{"dt": 0.0, "kind": "axis", "control": "ry", "value": 0.9}
+{"dt": 0.08, "kind": "axis", "control": "rx", "value": 0.6}
+{"dt": 0.0, "kind": "axis", "control": "ry", "value": 0.6}
+{"dt": 0.08, "kind": "axis", "control": "rx", "value": 0.9}
+{"dt": 0.0, "kind": "axis", "control": "ry", "value": 0.0}
+{"dt": 0.08, "kind": "axis", "control": "rx", "value": 0.6}
+{"dt": 0.0, "kind": "axis", "control": "ry", "value": -0.6}
+{"dt": 0.08, "kind": "axis", "control": "rx", "value": 0.0}
+{"dt": 0.0, "kind": "axis", "control": "ry", "value": -0.9}
+{"dt": 0.08, "kind": "axis", "control": "rx", "value": 0.0}
+{"dt": 0.0, "kind": "axis", "control": "ry", "value": 0.0}
+{"dt": 0.5, "kind": "axis", "control": "ly", "value": 0.9}
+{"dt": 1.0, "kind": "axis", "control": "ly", "value": 0.0}
+{"dt": 0.5, "kind": "button", "control": "start", "value": 1}
+{"dt": 0.1, "kind": "button", "control": "start", "value": 0}

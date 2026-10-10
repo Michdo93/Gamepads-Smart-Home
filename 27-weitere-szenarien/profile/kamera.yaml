@@ -1,0 +1,16 @@
+# Kapitel 27 – PTZ-Kamera: Stick schwenkt, Trigger zoomen, A/B/X/Y fahren Positionen an
+name: "PTZ-Kamera"
+actions:
+  "lstick:up":     {command: iIoT_Kamera_PTZ, value: UP}
+  "lstick:down":   {command: iIoT_Kamera_PTZ, value: DOWN}
+  "lstick:left":   {command: iIoT_Kamera_PTZ, value: LEFT}
+  "lstick:right":  {command: iIoT_Kamera_PTZ, value: RIGHT}
+  "lstick:center": {command: iIoT_Kamera_PTZ, value: STOP}
+  "rt:press":      {command: iIoT_Kamera_Zoom, value: IN}
+  "rt:release":    {command: iIoT_Kamera_Zoom, value: STOP}
+  "lt:press":      {command: iIoT_Kamera_Zoom, value: OUT}
+  "lt:release":    {command: iIoT_Kamera_Zoom, value: STOP}
+  "a:short":       {command: iIoT_Kamera_Preset, value: 1}
+  "b:short":       {command: iIoT_Kamera_Preset, value: 2}
+  "x:short":       {command: iIoT_Kamera_Preset, value: 3}
+  "y:short":       {command: iIoT_Kamera_Preset, value: 4}

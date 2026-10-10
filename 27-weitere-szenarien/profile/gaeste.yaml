@@ -1,0 +1,15 @@
+# Kapitel 27 – Gästemodus: nur Licht und Lautstärke im Multimedia-Raum, keine Routinen,
+# keine Rollläden, keine anderen Räume. Die Einschränkung liegt im Profil – nicht im Controller.
+name: "Gäste (Multimedia-Raum)"
+actions:
+  "a:short":      {toggle: iMultimedia_Hue_Lampen_Schalter}
+  "left:press":   {command: iMultimedia_Hue_Lampen_Helligkeit, value: DECREASE}
+  "left:repeat":  {command: iMultimedia_Hue_Lampen_Helligkeit, value: DECREASE}
+  "right:press":  {command: iMultimedia_Hue_Lampen_Helligkeit, value: INCREASE}
+  "right:repeat": {command: iMultimedia_Hue_Lampen_Helligkeit, value: INCREASE}
+  "up:press":     {command: iMultimedia_Sonos_Lautsprecher_Lautstaerke, value: INCREASE}
+  "up:repeat":    {command: iMultimedia_Sonos_Lautsprecher_Lautstaerke, value: INCREASE}
+  "down:press":   {command: iMultimedia_Sonos_Lautsprecher_Lautstaerke, value: DECREASE}
+  "down:repeat":  {command: iMultimedia_Sonos_Lautsprecher_Lautstaerke, value: DECREASE}
+analog:
+  rstick: {hue: iMultimedia_Hue_Lampen_Farbe, saturation: 80, brightness: 60, step: 10}

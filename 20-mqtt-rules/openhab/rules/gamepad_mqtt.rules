@@ -1,0 +1,115 @@
+// ============================================================================
+// Kapitel 20 – Ansatz A: Gerätesteuerung über openHAB-Regeln (Rules DSL, openHAB 5)
+// Datei: $OPENHAB_CONF/rules/gamepad_mqtt.rules
+// Nur EINE Sprachvariante (DSL, JS oder Python) gleichzeitig aktivieren!
+//
+// Belegung (wie im Repo xbox-360-openhab-controller):
+//   X kurz          Hue-Licht an/aus            B / Y kurz   Farbtemperatur - / +
+//   links / rechts  Helligkeit - / + (halten = wiederholen)
+//   oben / unten    Lautstärke im gewählten Raum + / - (halten = wiederholen)
+//   A kurz          Webradio im gewählten Raum an/aus
+//   LB / RB         Raum zurück / weiter        LT / RT      Sender zurück / weiter
+//   linker Stick    oben/unten: Rollladen, links/rechts: Jalousie, loslassen: STOP
+//   rechter Stick   Farbkreis (Item Gamepad_Wohnzimmer_Farbton)
+//   Start kurz      Morgenroutine               Back LANG    Ausgangszustand
+// ============================================================================
+import java.util.List
+import java.util.Map
+import org.openhab.core.model.script.ScriptServiceUtil
+
+val String EREIGNIS = "mqtt:topic:mosquitto:gamepad_wohnzimmer:event"
+val List<String> RAEUME = newArrayList("iKonferenz", "iKueche", "iBad", "iIoT", "iMultimedia")
+val List<String> SENDER = newArrayList("SWR3", "bigFM_BW", "Energy_Stuttgart", "Radio_Regenbogen",
+                                       "Antenne1", "DASDING")
+val Map<String, String> LAUTSTAERKE = newHashMap(
+    "iKonferenz"  -> "iKonferenz_Sonos_Playbar_Lautstaerke",
+    "iKueche"     -> "iKueche_Sonos_Lautsprecher_Lautstaerke",
+    "iBad"        -> "iBad_Sonos_Lautsprecher_Lautstaerke",
+    "iIoT"        -> "iIoT_Sonos_Lautsprecher_Lautstaerke",
+    "iMultimedia" -> "iMultimedia_Sonos_Lautsprecher_Lautstaerke")
+
+var String zuletztBewegt = null      // Rollladen/Jalousie, die der linke Stick zuletzt bewegt hat
+
+// Webradio-Item für Raum und Sender, z. B. iKueche_Webradio_SWR3
+val radioItem = [ String raum, String sender | raum + "_Webradio_" + sender ]
+
+// Auswahl weiterschalten; läuft das Radio, zieht es mit um
+val weiter = [ List<String> liste, String aktuell, int schritt |
+    val i = Math::max(0, liste.indexOf(aktuell))
+    liste.get(Math::floorMod(i + schritt, liste.size))
+]
+
+rule "Gamepad: Startwerte"
+when
+    System reached start level 100
+then
+    if (Gamepad_Raum.state == NULL)   Gamepad_Raum.postUpdate("iMultimedia")
+    if (Gamepad_Sender.state == NULL) Gamepad_Sender.postUpdate("SWR3")
+end
+
+rule "Gamepad: Ereignisse"
+when
+    Channel "mqtt:topic:mosquitto:gamepad_wohnzimmer:event" triggered
+then
+    val ereignis = receivedEvent             // z. B. "x:short"
+    val raum = Gamepad_Raum.state.toString
+    val sender = Gamepad_Sender.state.toString
+    val radio = radioItem.apply(raum, sender)
+
+    switch (ereignis) {
+        // --- Licht ---------------------------------------------------------------
+        case "x:short":
+            iSmartHome_Hue_Lampen_Schalter.sendCommand(if (iSmartHome_Hue_Lampen_Schalter.state == ON) OFF else ON)
+        case "b:short":  iSmartHome_Hue_Lampen_Farbtemperatur.sendCommand(DECREASE)
+        case "y:short":  iSmartHome_Hue_Lampen_Farbtemperatur.sendCommand(INCREASE)
+        case "left:press",  case "left:repeat":  iSmartHome_Hue_Lampen_Helligkeit.sendCommand(DECREASE)
+        case "right:press", case "right:repeat": iSmartHome_Hue_Lampen_Helligkeit.sendCommand(INCREASE)
+        // --- Webradio und Lautstärke --------------------------------------------------
+        case "up:press",   case "up:repeat":   sendCommand(LAUTSTAERKE.get(raum), "INCREASE")
+        case "down:press", case "down:repeat": sendCommand(LAUTSTAERKE.get(raum), "DECREASE")
+        case "a:short": {
+            val lauft = ScriptServiceUtil.getItemRegistry.getItem(radio).state == ON
+            sendCommand(radio, if (lauft) "OFF" else "ON")
+        }
+        case "lb:short", case "rb:short", case "lt:press", case "rt:press": {
+            val lauft = ScriptServiceUtil.getItemRegistry.getItem(radio).state == ON
+            val schritt = if (ereignis == "lb:short" || ereignis == "lt:press") -1 else 1
+            var neuRaum = raum
+            var neuSender = sender
+            if (ereignis.contains("b:"))                  // LB/RB: Raum, LT/RT: Sender
+                neuRaum = weiter.apply(RAEUME, raum, schritt)
+            else
+                neuSender = weiter.apply(SENDER, sender, schritt)
+            Gamepad_Raum.postUpdate(neuRaum)
+            Gamepad_Sender.postUpdate(neuSender)
+            if (lauft) {                                  // das Radio zieht mit um
+                sendCommand(radio, "OFF")
+                sendCommand(radioItem.apply(neuRaum, neuSender), "ON")
+            }
+            logInfo("gamepad", "Auswahl: {} / {}", neuRaum, neuSender)
+        }
+        // --- Rollladen und Jalousie ------------------------------------------------------
+        case "lstick:up":    { zuletztBewegt = "iSmartHome_Somfy_Rollladen_Steuerung"; sendCommand(zuletztBewegt, "UP") }
+        case "lstick:down":  { zuletztBewegt = "iSmartHome_Somfy_Rollladen_Steuerung"; sendCommand(zuletztBewegt, "DOWN") }
+        case "lstick:right": { zuletztBewegt = "iSmartHome_Jalousie_Steuerung"; sendCommand(zuletztBewegt, "UP") }
+        case "lstick:left":  { zuletztBewegt = "iSmartHome_Jalousie_Steuerung"; sendCommand(zuletztBewegt, "DOWN") }
+        case "lstick:center": {
+            if (zuletztBewegt !== null) sendCommand(zuletztBewegt, "STOP")
+            zuletztBewegt = null
+        }
+        // --- Routinen ---------------------------------------------------------------------------
+        case "start:short":
+            iApplikation_Morgenroutine_Start.sendCommand(if (iApplikation_Morgenroutine_Start.state == ON) OFF else ON)
+        case "back:long":
+            iApplikation_Morgenroutine_Ausgangszustand.sendCommand(
+                if (iApplikation_Morgenroutine_Ausgangszustand.state == ON) OFF else ON)
+    }
+end
+
+rule "Gamepad: rechter Stick als Farbkreis"
+when
+    Item Gamepad_Wohnzimmer_Farbton changed
+then
+    if (!(newState instanceof Number)) return;
+    iSmartHome_Hue_Lampen_Farbe.sendCommand((newState as Number).intValue + ",100,70")
+end

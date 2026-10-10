@@ -1,0 +1,10 @@
+Imported USB devices
+====================
+Port 00: <Port in Use> at Full Speed(12Mbps)
+       Microsoft Corp. : Xbox 360 Wireless Adapter (045e:0719)
+       3-1 -> usbip://192.168.0.231:3240/1-1.2
+           -> remote bus/dev 001/004
+Port 01: <Port in Use> at Full Speed(12Mbps)
+       Sony Corp. : DUALSHOCK®4 USB Wireless Adaptor (054c:0ba0)
+       3-2 -> usbip://192.168.0.231:3240/1-1.21
+           -> remote bus/dev 001/007

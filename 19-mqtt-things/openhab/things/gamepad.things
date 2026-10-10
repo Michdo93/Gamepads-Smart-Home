@@ -1,0 +1,47 @@
+// ============================================================================
+// Kapitel 19 – MQTT-Broker-Thing und Gamepad-Thing (Generic MQTT)
+//
+// Voraussetzung: MQTT-Binding installiert, Mosquitto läuft (Kapitel 17),
+// Gateway läuft (Kapitel 18). Passwort: hier nur Platzhalter – in der UI eintragen
+// oder diese Datei mit echtem Passwort NICHT einchecken.
+//
+// Topic-Schema des Gateways (alias = wohnzimmer):
+//   gamepad/wohnzimmer/status         online | offline          (retained)
+//   gamepad/wohnzimmer/event          a:short, up:repeat, lstick:up ...  (Ereignis)
+//   gamepad/wohnzimmer/button/<name>  ON | OFF
+//   gamepad/wohnzimmer/dpad           UP | DOWN | LEFT | RIGHT | ... | NONE
+//   gamepad/wohnzimmer/axis/<achse>   -100..100 (Sticks), 0..100 (Trigger)
+//   gamepad/wohnzimmer/hue            0..355
+//   gamepad/wohnzimmer/battery        0..100
+//   gamepad/wohnzimmer/set/rumble     <- openHAB: kurz | doppelt | lang | klingel
+//   gamepad/wohnzimmer/set/led        <- openHAB: player_1..4 | rotate | off | r,g,b
+// ============================================================================
+
+Bridge mqtt:broker:mosquitto "Mosquitto" [
+    host="localhost", port=1883, secure=false,
+    username="openhab", password="CHANGE_ME",
+    clientID="openhab-gamepad"
+] {
+    Thing topic gamepad_wohnzimmer "Gamepad Wohnzimmer" @ "Multimedia" [
+        availabilityTopic="gamepad/wohnzimmer/status",
+        payloadAvailable="online", payloadNotAvailable="offline"
+    ] {
+        Channels:
+            // Ereignisse: Trigger-Kanal – löst bei JEDER Nachricht aus, auch bei gleichem Inhalt
+            Type string  : event    "Ereignis"       [ stateTopic="gamepad/wohnzimmer/event", trigger=true ]
+            // Zustände
+            Type string  : status   "Status"         [ stateTopic="gamepad/wohnzimmer/status" ]
+            Type string  : letztes  "Letztes Ereignis" [ stateTopic="gamepad/wohnzimmer/event" ]
+            Type switch  : btn_a    "Taste A"        [ stateTopic="gamepad/wohnzimmer/button/a", on="ON", off="OFF" ]
+            Type switch  : btn_lb   "Taste LB"       [ stateTopic="gamepad/wohnzimmer/button/lb", on="ON", off="OFF" ]
+            Type string  : dpad     "Steuerkreuz"    [ stateTopic="gamepad/wohnzimmer/dpad" ]
+            Type number  : lx       "Linker Stick X" [ stateTopic="gamepad/wohnzimmer/axis/lx", min=-100, max=100 ]
+            Type number  : ly       "Linker Stick Y" [ stateTopic="gamepad/wohnzimmer/axis/ly", min=-100, max=100 ]
+            Type dimmer  : rt       "Trigger RT"     [ stateTopic="gamepad/wohnzimmer/axis/rt", min=0, max=100 ]
+            Type number  : hue      "Farbton"        [ stateTopic="gamepad/wohnzimmer/hue", min=0, max=359 ]
+            Type number  : battery  "Akku"           [ stateTopic="gamepad/wohnzimmer/battery", unit="%" ]
+            // Rückkanal (Kapitel 21): nur Befehle, kein Zustand
+            Type string  : rumble   "Vibration"      [ commandTopic="gamepad/wohnzimmer/set/rumble" ]
+            Type string  : led      "LED"            [ commandTopic="gamepad/wohnzimmer/set/led" ]
+    }
+}

@@ -1,0 +1,54 @@
+# ============================================================================
+# Kapitel 23 – Die Belegung aus dem Repo xbox-360-openhab-controller als Bedienprofil
+# Unterschiede zum Original:
+#   * Back schaltet den Ausgangszustand erst bei LANGEM Druck (Schutz vor Versehen)
+#   * Raum-/Senderwechsel nimmt das Radio nur mit, wenn es läuft
+#   * Loslassen des linken Sticks stoppt nur das zuletzt bewegte Gerät
+# ============================================================================
+name: "Xbox-360-Controller (Original-Belegung)"
+
+rings:
+  raum:   [iKonferenz, iKueche, iBad, iIoT, iMultimedia]
+  sender: [SWR3, bigFM_BW, Energy_Stuttgart, Radio_Regenbogen, Antenne1, DASDING]
+
+lookups:
+  lautstaerke:
+    ring: raum
+    map:
+      iKonferenz:  iKonferenz_Sonos_Playbar_Lautstaerke
+      iKueche:     iKueche_Sonos_Lautsprecher_Lautstaerke
+      iBad:        iBad_Sonos_Lautsprecher_Lautstaerke
+      iIoT:        iIoT_Sonos_Lautsprecher_Lautstaerke
+      iMultimedia: iMultimedia_Sonos_Lautsprecher_Lautstaerke
+
+actions:
+  # Licht
+  "x:short":      {toggle: iSmartHome_Hue_Lampen_Schalter}
+  "b:short":      {command: iSmartHome_Hue_Lampen_Farbtemperatur, value: DECREASE}
+  "y:short":      {command: iSmartHome_Hue_Lampen_Farbtemperatur, value: INCREASE}
+  "left:press":   {command: iSmartHome_Hue_Lampen_Helligkeit, value: DECREASE}
+  "left:repeat":  {command: iSmartHome_Hue_Lampen_Helligkeit, value: DECREASE}
+  "right:press":  {command: iSmartHome_Hue_Lampen_Helligkeit, value: INCREASE}
+  "right:repeat": {command: iSmartHome_Hue_Lampen_Helligkeit, value: INCREASE}
+  # Webradio und Lautstärke
+  "a:short":      {toggle: "{raum}_Webradio_{sender}"}
+  "up:press":     {command: "{lautstaerke}", value: INCREASE}
+  "up:repeat":    {command: "{lautstaerke}", value: INCREASE}
+  "down:press":   {command: "{lautstaerke}", value: DECREASE}
+  "down:repeat":  {command: "{lautstaerke}", value: DECREASE}
+  "lb:short":     {ring: raum, step: -1, carry: "{raum}_Webradio_{sender}"}
+  "rb:short":     {ring: raum, step: 1,  carry: "{raum}_Webradio_{sender}"}
+  "lt:press":     {ring: sender, step: -1, carry: "{raum}_Webradio_{sender}"}
+  "rt:press":     {ring: sender, step: 1,  carry: "{raum}_Webradio_{sender}"}
+  # Rollladen und Jalousie mit dem linken Stick
+  "lstick:up":    {command: iSmartHome_Somfy_Rollladen_Steuerung, value: UP, group: links}
+  "lstick:down":  {command: iSmartHome_Somfy_Rollladen_Steuerung, value: DOWN, group: links}
+  "lstick:right": {command: iSmartHome_Jalousie_Steuerung, value: UP, group: links}
+  "lstick:left":  {command: iSmartHome_Jalousie_Steuerung, value: DOWN, group: links}
+  "lstick:center": {stop: links}
+  # Routinen
+  "start:short":  {toggle: iApplikation_Morgenroutine_Start}
+  "back:long":    {toggle: iApplikation_Morgenroutine_Ausgangszustand}
+
+analog:
+  rstick: {hue: iSmartHome_Hue_Lampen_Farbe, saturation: 100, brightness: 70, step: 5}

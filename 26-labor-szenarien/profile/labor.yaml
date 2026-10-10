@@ -1,0 +1,109 @@
+# ============================================================================
+# Kapitel 26 – Das Laborprofil: vier Modi, ein Controller
+#
+#   Guide kurz      nächster Modus (Ring-LED zeigt ihn: Spieler 1 = Licht, 2 = Radio,
+#                   3 = Rollladen, 4 = TV; DualShock 4: Farbe der Lightbar)
+#   Start kurz      Morgenroutine            Back LANG   Ausgangszustand
+#
+# In jedem Modus belegen dieselben Tasten andere Geräte. Was in allen Modi gleich
+# bleibt, steht unter actions; was nur im Modus gilt, unter modes.<name>.actions.
+# ============================================================================
+name: "Labor (4 Modi)"
+
+rings:
+  raum:   [iSmartHome, iKueche, iBad, iIoT, iMultimedia]          # Räume mit Hue-Lampen
+  sender: [SWR3, bigFM_BW, Energy_Stuttgart, Radio_Regenbogen, Antenne1, DASDING]
+  radioraum: [iMultimedia, iKonferenz, iKueche, iBad, iIoT]
+
+lookups:
+  lautstaerke:
+    ring: radioraum
+    map:
+      iKonferenz:  iKonferenz_Sonos_Playbar_Lautstaerke
+      iKueche:     iKueche_Sonos_Lautsprecher_Lautstaerke
+      iBad:        iBad_Sonos_Lautsprecher_Lautstaerke
+      iIoT:        iIoT_Sonos_Lautsprecher_Lautstaerke
+      iMultimedia: iMultimedia_Sonos_Lautsprecher_Lautstaerke
+  wiedergabe:
+    ring: radioraum
+    map:
+      iKonferenz:  iKonferenz_Sonos_Playbar_Steuerung
+      iKueche:     iKueche_Sonos_Lautsprecher_Steuerung
+      iBad:        iBad_Sonos_Lautsprecher_Steuerung
+      iIoT:        iIoT_Sonos_Lautsprecher_Steuerung
+      iMultimedia: iMultimedia_Sonos_Lautsprecher_Steuerung
+
+actions:
+  "guide:short":
+    - {mode: next}
+    - {feedback: led, value: "player_{modus_nr}"}
+    - {feedback: rumble, value: kurz}
+  "start:short": {toggle: iApplikation_Morgenroutine_Start}
+  "back:long":   {toggle: iApplikation_Morgenroutine_Ausgangszustand}
+
+modes:
+  # --- Modus 1: Licht im gewählten Raum ------------------------------------------
+  licht:
+    actions:
+      "a:short":      {toggle: "{raum}_Hue_Lampen_Schalter"}
+      "left:press":   {command: "{raum}_Hue_Lampen_Helligkeit", value: DECREASE}
+      "left:repeat":  {command: "{raum}_Hue_Lampen_Helligkeit", value: DECREASE}
+      "right:press":  {command: "{raum}_Hue_Lampen_Helligkeit", value: INCREASE}
+      "right:repeat": {command: "{raum}_Hue_Lampen_Helligkeit", value: INCREASE}
+      "up:press":     {command: "{raum}_Hue_Lampen_Farbtemperatur", value: DECREASE}   # kälter
+      "down:press":   {command: "{raum}_Hue_Lampen_Farbtemperatur", value: INCREASE}   # wärmer
+      "lb:short":     [{ring: raum, step: -1}, {feedback: rumble, value: kurz}]
+      "rb:short":     [{ring: raum, step: 1},  {feedback: rumble, value: kurz}]
+      "x:long":       {command: gLichter, value: "OFF"}                                # alle aus
+    analog:
+      rstick: {hue: "{raum}_Hue_Lampen_Farbe", saturation: 100, brightness: 70, step: 5}
+      rt:     {dimmer: "{raum}_Hue_Lampen_Helligkeit", step: 5}                         # Trigger = Helligkeit
+
+  # --- Modus 2: Webradio ---------------------------------------------------------------
+  radio:
+    actions:
+      "a:short":     {toggle: "{radioraum}_Webradio_{sender}"}
+      "x:short":     {command: "{wiedergabe}", value: PAUSE}
+      "y:short":     {command: "{wiedergabe}", value: PLAY}
+      "up:press":    {command: "{lautstaerke}", value: INCREASE}
+      "up:repeat":   {command: "{lautstaerke}", value: INCREASE}
+      "down:press":  {command: "{lautstaerke}", value: DECREASE}
+      "down:repeat": {command: "{lautstaerke}", value: DECREASE}
+      "lb:short":    {ring: radioraum, step: -1, carry: "{radioraum}_Webradio_{sender}"}
+      "rb:short":    {ring: radioraum, step: 1,  carry: "{radioraum}_Webradio_{sender}"}
+      "lt:press":    {ring: sender, step: -1, carry: "{radioraum}_Webradio_{sender}"}
+      "rt:press":    {ring: sender, step: 1,  carry: "{radioraum}_Webradio_{sender}"}
+      "x:long":      {command: gWebradio, value: "OFF"}                                # alle Radios aus
+
+  # --- Modus 3: Rollladen und Jalousie --------------------------------------------------
+  rollladen:
+    actions:
+      "lstick:up":     {command: iSmartHome_Somfy_Rollladen_Steuerung, value: UP, group: links}
+      "lstick:down":   {command: iSmartHome_Somfy_Rollladen_Steuerung, value: DOWN, group: links}
+      "lstick:right":  {command: iSmartHome_Jalousie_Steuerung, value: UP, group: links}
+      "lstick:left":   {command: iSmartHome_Jalousie_Steuerung, value: DOWN, group: links}
+      "lstick:center": {stop: links}
+      "up:press":      {command: iSmartHome_Jalousie_Lamelle, value: DECREASE}
+      "up:repeat":     {command: iSmartHome_Jalousie_Lamelle, value: DECREASE}
+      "down:press":    {command: iSmartHome_Jalousie_Lamelle, value: INCREASE}
+      "down:repeat":   {command: iSmartHome_Jalousie_Lamelle, value: INCREASE}
+      "y:long":        {command: gRollladen, value: UP}                                 # alle auf
+      "a:long":        {command: gRollladen, value: DOWN}                               # alle zu
+
+  # --- Modus 4: Fernseher im Multimedia-Raum ---------------------------------------------
+  tv:
+    actions:
+      "up:press":     {command: iMultimedia_Samsung_TV_Taste, value: KEY_UP}
+      "up:repeat":    {command: iMultimedia_Samsung_TV_Taste, value: KEY_UP}
+      "down:press":   {command: iMultimedia_Samsung_TV_Taste, value: KEY_DOWN}
+      "down:repeat":  {command: iMultimedia_Samsung_TV_Taste, value: KEY_DOWN}
+      "left:press":   {command: iMultimedia_Samsung_TV_Taste, value: KEY_LEFT}
+      "right:press":  {command: iMultimedia_Samsung_TV_Taste, value: KEY_RIGHT}
+      "a:short":      {command: iMultimedia_Samsung_TV_Taste, value: KEY_ENTER}
+      "b:short":      {command: iMultimedia_Samsung_TV_Taste, value: KEY_RETURN}
+      "x:short":      {command: iMultimedia_Samsung_TV_Taste, value: KEY_HOME}
+      "lt:press":     {command: iMultimedia_Samsung_TV_Taste, value: KEY_CHDOWN}
+      "rt:press":     {command: iMultimedia_Samsung_TV_Taste, value: KEY_CHUP}
+      "lb:short":     {command: iMultimedia_Samsung_TV_Lautstaerke, value: DECREASE}
+      "rb:short":     {command: iMultimedia_Samsung_TV_Lautstaerke, value: INCREASE}
+      "y:long":       {toggle: iMultimedia_Samsung_TV_Power}

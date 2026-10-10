@@ -1,0 +1,35 @@
+# Xbox-360-Controller über den Funkempfänger (Wireless Receiver) – Kerneltreiber xpad
+# Unterschied zum Kabel: xpad meldet das Steuerkreuz hier als vier TASTEN
+# (BTN_TRIGGER_HAPPY1..4) statt als Hat. Prüfen: python3 08-mapping/mapping_finder.py
+name: "Xbox 360 Controller (Funkempfänger)"
+match:
+  names: ["Xbox 360 Wireless Receiver"]
+  usb: ["045e:0719", "045e:0291"]
+notes: >
+  Ein Empfänger bedient bis zu vier Controller; für jeden verbundenen Controller legt
+  xpad ein eigenes Eingabegerät an. Steuerkreuz als Tasten: HAPPY1 links, HAPPY2 rechts,
+  HAPPY3 oben, HAPPY4 unten.
+evdev:
+  buttons: {a: BTN_SOUTH, b: BTN_EAST, x: BTN_NORTH, y: BTN_WEST, lb: BTN_TL, rb: BTN_TR,
+            back: BTN_SELECT, start: BTN_START, guide: BTN_MODE, ls: BTN_THUMBL, rs: BTN_THUMBR}
+  axes:
+    lx: {code: ABS_X}
+    ly: {code: ABS_Y, invert: true}
+    rx: {code: ABS_RX}
+    ry: {code: ABS_RY, invert: true}
+    lt: {code: ABS_Z, trigger: true}
+    rt: {code: ABS_RZ, trigger: true}
+  dpad:
+    buttons: {left: BTN_TRIGGER_HAPPY1, right: BTN_TRIGGER_HAPPY2,
+              up: BTN_TRIGGER_HAPPY3, down: BTN_TRIGGER_HAPPY4}
+pygame:
+  buttons: {a: 0, b: 1, x: 2, y: 3, lb: 4, rb: 5, back: 6, start: 7, guide: 8, ls: 9, rs: 10}
+  axes:
+    lx: {index: 0}
+    ly: {index: 1, invert: true}
+    lt: {index: 2, trigger: true}
+    rx: {index: 3}
+    ry: {index: 4, invert: true}
+    rt: {index: 5, trigger: true}
+  dpad:
+    buttons: {left: 11, right: 12, up: 13, down: 14}
